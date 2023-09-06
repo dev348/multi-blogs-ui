@@ -59,7 +59,7 @@ function BlogList({load}) {
       <div className="paginate">
         {!loading && (
           <ReactPaginate
-            previousLabel="<< Previous "
+            previousLabel="<< Prev "
             nextLabel="Next >> "
             breakLabel="..."
             breakClassName="break-me"

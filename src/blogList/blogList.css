@@ -55,3 +55,28 @@
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+
+/* Style the pagination container */
+.pagination {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+}
+
+/* Style the individual pagination items (page numbers, previous, and next) */
+.pagination li {
+  margin: 0 5px;
+  padding: 5px 10px;
+  border: 1px solid #000000;
+  background-color: #fff;
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Style the active pagination item */
+.pagination li.active {
+  background-color: #007bff; /* Change this to the desired active color */
+  color: #fff; /* Change the text color for the active item */
+  border-color: #007bff; /* Change the border color for the active item */
+}
