@@ -1,13 +1,43 @@
 header{
-    background-color: rgb(9, 132, 0);
+    background-color: #5C8374;
     display: flex;
-    flex-direction: column;
     row-gap: 15px;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     padding: 20px;
 }
 
-.title{
-    color: whitesmoke;
+.head-section{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 250px;
+    padding: 10px
 }
+
+.bg-default{
+    background-color: #93B1A6;
+    color: #000;
+}
+
+/* Style the select box */
+select {
+    background-color: #93B1A6;
+    color: black;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px; 
+    outline: none; 
+    
+  }
+  
+
+.title{
+    color: #183D3D;
+}
+
+@media (max-width: 568px) {
+    header{
+        flex-direction: column;
+    }
+  }
