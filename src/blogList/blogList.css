@@ -7,14 +7,13 @@
   
   .grid-container {
     display: grid;
-    grid-template-columns: repeat(1, 1fr); /* One column by default */
-    gap: 20px; /* Adjust the gap between cards */
+    grid-template-columns: repeat(1, minmax(200px, 1fr));
+    gap: 20px;
   }
   
   @media (min-width: 768px) {
-    /* On screens larger than 768px, switch to two columns */
     .grid-container {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(200px, 1fr));
     }
   }
   
@@ -26,6 +25,7 @@
     text-align: left;
     transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
     cursor: pointer;
+    word-wrap: break-word;
   }
   
   .blog-card:hover {
@@ -33,15 +33,12 @@
   }
   
   .paginate{  
-    /* position: fixed;
-    bottom: 0; */
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20%;
+    margin-top: 5%;
   }
 
-  /* Add a CSS loader animation */
 .loader {
   border: 4px solid #93B1A6;
   border-top: 4px solid #183D3D;
@@ -58,14 +55,12 @@
 }
 
 
-/* Style the pagination container */
 .pagination {
   display: flex;
   justify-content: center;
   list-style: none;
 }
 
-/* Style the individual pagination items (page numbers, previous, and next) */
 .pagination li a {
   margin: 0 5px;
   padding: 5px 10px;
@@ -78,21 +73,18 @@
 
  
 
-/* Style the active pagination item */
 .pagination li.active a {
   background-color: #183D3D;
   color: #fff;
 }
 
 
-/* Style the blog-details section */
 .blog-details {
   padding: 20px;
   margin: 10px;
   text-align: left;
 }
 
-/* Style the Back button */
 .back-button {
   background-color: #93B1A6;
   color: #000000;
@@ -114,12 +106,11 @@
   font-size: 24px;
 }
 
-/* Style the author name in the details view */
+
 .blog-details p.author {
   margin-top: 10px;
 }
 
-/* Style the overlay */
 .overlay {
   position: fixed;
   top: 0;
