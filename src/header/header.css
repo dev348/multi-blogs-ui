@@ -1,0 +1,13 @@
+header{
+    background-color: rgb(9, 132, 0);
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.title{
+    color: whitesmoke;
+}
