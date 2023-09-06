@@ -52,7 +52,7 @@ function BlogList({ load }) {
       ) : selectedBlog ? (
         <div className="blog-details">
           <button onClick={handleBackClick} className="back-button">
-            Back
+            ← Back
           </button>
           <h1>{selectedBlog.title}</h1>
           <p>{selectedBlog.content}</p>
