@@ -6,18 +6,24 @@ import './blogList.css';
 function BlogList({ load }) {
   const [blogs, setBlogs] = useState([]);
   const [pageNumber, setPageNumber] = useState(0);
+  const [blogLen, setBlogLen] = useState(0);
   const [loading, setLoading] = useState(true);
   const blogsPerPage = 10;
-  const [selectedBlog, setSelectedBlog] = useState(null); // Store selected blog
+  const [selectedBlog, setSelectedBlog] = useState(null);
 
   useEffect(() => {
     setLoading(true);
     setTimeout(() => {
-      fetch('https://multibogs.onrender.com/api/blogs')
+      fetch(`https://multibogs.onrender.com/api/blogs?limit=${10}`)
         .then((response) => response.json())
         .then((data) => {
-          setBlogs(data);
-          setLoading(false);
+          if (data.error) {
+            setLoading(false);
+          } else {
+            setBlogs(data?.blogsWithExcerpts);
+            setBlogLen(data?.totalCount || 0)
+            setLoading(false);
+          }
         })
         .catch((error) => {
           console.error('Error fetching data:', error);
@@ -26,16 +32,26 @@ function BlogList({ load }) {
     }, 2000);
   }, [load]);
 
-  const pageCount = Math.ceil(blogs.length / blogsPerPage);
+  const pageCount = Math.ceil(blogLen / blogsPerPage);
 
   const handlePageChange = ({ selected }) => {
     setPageNumber(selected);
+    fetch(`https://multibogs.onrender.com/api/blogs?page=${selected + 1}&limit=${10}`)
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.error) {
+          setLoading(false);
+        } else {
+          setBlogs(data?.blogsWithExcerpts);
+          setBlogLen(data?.totalCount || 0)
+          setLoading(false);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error);
+        setLoading(false);
+      });
   };
-
-  const displayedBlogs = blogs.slice(
-    pageNumber * blogsPerPage,
-    (pageNumber + 1) * blogsPerPage
-  );
 
   const handleCardClick = (blog) => {
     setSelectedBlog(blog);
@@ -58,9 +74,13 @@ function BlogList({ load }) {
           <p>{selectedBlog.content}</p>
           <p><b>Author:</b> {selectedBlog.author}</p>
         </div>
+      ) : blogs.length == 0 ? (
+        <div className="grid-container">
+          <h1>No Data Found..!</h1>
+        </div>
       ) : (
         <div className="grid-container">
-          {displayedBlogs.map((blog) => (
+          {blogs.map((blog) => (
             <div
               key={blog.id}
               className="blog-card"
@@ -78,7 +98,7 @@ function BlogList({ load }) {
       )}
 
       <div className="paginate">
-        {!loading && !selectedBlog && (
+        {!loading && !selectedBlog && (blogLen > 0) && (
           <ReactPaginate
             previousLabel="<< Prev "
             nextLabel="Next >> "
