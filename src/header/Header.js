@@ -10,7 +10,7 @@ function Header({ setLoad, load }) {
       <>
         <section className="head-section">
           <button type="button" class="btn bg-default" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
-            Add Blog +
+            Add Blog
           </button>
           <>
             <select id="languageSelect">

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
-
+import axios from 'axios'; 
 import './blogList.css';
+
+
+
+// const projectId = 'muiltblogs';
+// const targetLanguage = 'en';
 
 function BlogList({ load }) {
   const [blogs, setBlogs] = useState([]);
@@ -10,6 +15,8 @@ function BlogList({ load }) {
   const [loading, setLoading] = useState(true);
   const blogsPerPage = 10;
   const [selectedBlog, setSelectedBlog] = useState(null);
+  const [translatedContent, setTranslatedContent] = useState('');
+  const [translateInitialized, setTranslateInitialized] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +37,12 @@ function BlogList({ load }) {
           setLoading(false);
         });
     }, 2000);
-  }, [load]);
+
+    if (!translateInitialized && selectedBlog) {
+      setTranslateInitialized(true);
+    }
+
+  }, [load,selectedBlog, translateInitialized]);
 
   const pageCount = Math.ceil(blogLen / blogsPerPage);
 
@@ -59,8 +71,35 @@ function BlogList({ load }) {
 
   const handleBackClick = () => {
     setSelectedBlog(null);
+     setTranslatedContent(''); 
   };
 
+
+  const handleTranslate = (blog,selectedLanguage) => {
+    if (translateInitialized) {
+      // Translate the content
+      const apiKey = 'AIzaSyDiNU3UIY-JRABaDYMMQIdt0SDzXAgdakM';
+      const translateRequest = {
+        q: [blog.content],
+        target: selectedLanguage,
+      };
+
+      axios
+        .post(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, translateRequest)
+        .then((response) => {
+          if (response && response.data && response.data.data && response.data.data.translations) {
+            setTranslatedContent(response.data.data.translations[0].translatedText);
+          } else {
+            console.error('Translation error:', response);
+            // Handle translation error here
+          }
+          
+        })
+        .catch((error) => {
+          console.error('Translation error-1:', error);
+        });
+    }
+  };
   return (
     <section className="blog-list">
       {loading ? (
@@ -70,11 +109,31 @@ function BlogList({ load }) {
           <button onClick={handleBackClick} className="back-button">
             ← Back
           </button>
+          <>
+          <select id="languageSelect"
+          onChange={(e) => {
+            const selectedLanguage = e.target.value;
+            if (selectedLanguage === selectedBlog.language) {
+              setTranslatedContent(''); // Clear the translated content
+            } else {
+              handleTranslate(selectedBlog, selectedLanguage); // Translate to the selected language
+            }
+          }}>
+          <option value={selectedBlog.language}>Default Language</option>
+         <option value="en">English</option>
+          <option value="fr">French</option>
+          </select>
+</>
+
+          {/* <button onClick={() => handleTranslate(selectedBlog)} className="translate-button">
+            Translate
+          </button> */}
           <h1>{selectedBlog.title}</h1>
-          <p>{selectedBlog.content}</p>
+          {console.log('Translated Content:', translatedContent)}
+          <p>{translatedContent || selectedBlog.content}</p>
           <p><b>Author:</b> {selectedBlog.author}</p>
         </div>
-      ) : blogs.length == 0 ? (
+      ) : blogs.length === 0 ? (
         <div className="grid-container">
           <h1>No Data Found..!</h1>
         </div>
