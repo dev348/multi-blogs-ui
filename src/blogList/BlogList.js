@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactPaginate from 'react-paginate';
-
+import axios from 'axios'; 
 import './blogList.css';
+
+
+
+// const projectId = 'muiltblogs';
+// const targetLanguage = 'en';
 
 function BlogList({ load }) {
   const [blogs, setBlogs] = useState([]);
@@ -10,6 +15,8 @@ function BlogList({ load }) {
   const [loading, setLoading] = useState(true);
   const blogsPerPage = 10;
   const [selectedBlog, setSelectedBlog] = useState(null);
+  const [translatedContent, setTranslatedContent] = useState('');
+  const [translateInitialized, setTranslateInitialized] = useState(false);
 
   useEffect(() => {
     setLoading(true);
@@ -30,7 +37,12 @@ function BlogList({ load }) {
           setLoading(false);
         });
     }, 2000);
-  }, [load]);
+
+    if (!translateInitialized && selectedBlog) {
+      setTranslateInitialized(true);
+    }
+
+  }, [load,selectedBlog, translateInitialized]);
 
   const pageCount = Math.ceil(blogLen / blogsPerPage);
 
@@ -59,8 +71,44 @@ function BlogList({ load }) {
 
   const handleBackClick = () => {
     setSelectedBlog(null);
+     setTranslatedContent(''); 
   };
 
+
+  const handleTranslate = (blog, selectedLanguage) => {
+    if (translateInitialized && selectedLanguage) {
+      const apiKey = 'AIzaSyDiNU3UIY-JRABaDYMMQIdt0SDzXAgdakM';
+      const translateRequest = {
+        q: [blog.title, blog.content, blog.author, blog.excerpt],
+        target: selectedLanguage,
+      };
+
+      axios
+        .post(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, translateRequest)
+        .then((response) => {
+          if (response && response.data && response.data.data && response.data.data.translations) {
+            const translations = response.data.data.translations;
+            const translatedTitle = translations[0].translatedText;
+            const translatedContent = translations[1].translatedText;
+            const translatedAuthor = translations[2].translatedText;
+            const translatedExcerpt = translations[3].translatedText;
+
+            setTranslatedContent(translatedContent);
+            setSelectedBlog({
+              ...selectedBlog,
+              title: translatedTitle,
+              author: translatedAuthor,
+              excerpt: translatedExcerpt,
+            });
+          } else {
+            console.error('Translation error:', response);
+          }
+        })
+        .catch((error) => {
+          console.error('Translation error-1:', error);
+        });
+    }
+  };
   return (
     <section className="blog-list">
       {loading ? (
@@ -70,11 +118,38 @@ function BlogList({ load }) {
           <button onClick={handleBackClick} className="back-button">
             ← Back
           </button>
+          <div className='mb-4'>
+          <select id="languageSelect"
+          onChange={(e) => {
+            const selectedLanguage = e.target.value;
+            if (selectedLanguage === selectedBlog.language) {
+              setTranslatedContent(''); 
+            } else {
+              handleTranslate(selectedBlog, selectedLanguage); // Translate to the selected language
+            }
+          }}>
+          <option value={selectedBlog.language}>Default Language</option>
+          <option value="en">English</option>
+          <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="hi">Hindi</option>
+          <option value="id">Indonesian</option>
+          <option value="it">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese </option>
+          <option value="ru">Russian </option>
+          <option value="es">Spanish  </option>
+          <option value="ua">Ukrainian </option>
+          <option value="zh">Chinese  </option>
+          </select>
+</div>
+
+          
           <h1>{selectedBlog.title}</h1>
-          <p>{selectedBlog.content}</p>
+          <p>{translatedContent || selectedBlog.content}</p>
           <p><b>Author:</b> {selectedBlog.author}</p>
         </div>
-      ) : blogs.length == 0 ? (
+      ) : blogs.length === 0 ? (
         <div className="grid-container">
           <h1>No Data Found..!</h1>
         </div>

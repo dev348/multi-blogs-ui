@@ -23,7 +23,7 @@ function BlogPostForm({ load, setLoad }) {
       const response = await axios.post('https://multibogs.onrender.com/api/blogs', formData);
 
       if (response.status === 201) {
-        console.log('Blog post created successfully:', response.data);
+        alert('Blog post created successfully');
 
         setFormData({
           title: '',
@@ -47,9 +47,30 @@ function BlogPostForm({ load, setLoad }) {
     'French',
     'German',
     'Chinese',
-    // Add more languages as needed
-  ];
+    'Hindi',
+    'Indonesian',
+    'Japanese',
+    'Korean',
+    'Portuguese',
+    'Russian',
+    'Ukrainian',
+];
 
+
+const languageCodes = {
+    'English': 'en',
+    'Spanish': 'es',
+    'French': 'fr',
+    'German': 'de',
+    'Chinese': 'zh',
+    'Hindi': 'hi',
+    'Indonesian': 'id',
+    'Japanese': 'it',
+    'Korean': 'ko',
+    'Portuguese': 'pt',
+    'Russian': 'ru',
+    'Ukrainian': 'ua',
+};
   return (
     <div className="container">
       <form onSubmit={handleSubmit}>
@@ -117,19 +138,19 @@ function BlogPostForm({ load, setLoad }) {
             onChange={handleChange}
             required
           >
-            <option value="" disabled>
-              Select a language
-            </option>
-            {languageOptions.map((language, index) => (
-              <option key={index} value={language}>
-                {language}
-              </option>
-            ))}
-          </select>
+          <option value="" disabled>
+    Select a language
+  </option>
+  {languageOptions.map((language, index) => (
+    <option key={index} value={languageCodes[language]}>
+      {language} ({languageCodes[language]})
+    </option>
+  ))}
+  </select>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
-          <button type="submit" class="btn btn-primary">Submit</button>
+        <div className="modal-footer">
+          <button type="button" className="btn btn-secondary" data-bs-dismiss="modal" >Close</button>
+          <button type="submit" className="btn btn-success">Submit</button>
         </div>
       </form >
     </div >
