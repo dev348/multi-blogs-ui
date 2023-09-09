@@ -75,12 +75,11 @@ function BlogList({ load }) {
   };
 
 
-  const handleTranslate = (blog,selectedLanguage) => {
-    if (translateInitialized) {
-      // Translate the content
+  const handleTranslate = (blog, selectedLanguage) => {
+    if (translateInitialized && selectedLanguage) {
       const apiKey = 'AIzaSyDiNU3UIY-JRABaDYMMQIdt0SDzXAgdakM';
       const translateRequest = {
-        q: [blog.content],
+        q: [blog.title, blog.content, blog.author, blog.excerpt],
         target: selectedLanguage,
       };
 
@@ -88,12 +87,22 @@ function BlogList({ load }) {
         .post(`https://translation.googleapis.com/language/translate/v2?key=${apiKey}`, translateRequest)
         .then((response) => {
           if (response && response.data && response.data.data && response.data.data.translations) {
-            setTranslatedContent(response.data.data.translations[0].translatedText);
+            const translations = response.data.data.translations;
+            const translatedTitle = translations[0].translatedText;
+            const translatedContent = translations[1].translatedText;
+            const translatedAuthor = translations[2].translatedText;
+            const translatedExcerpt = translations[3].translatedText;
+
+            setTranslatedContent(translatedContent);
+            setSelectedBlog({
+              ...selectedBlog,
+              title: translatedTitle,
+              author: translatedAuthor,
+              excerpt: translatedExcerpt,
+            });
           } else {
             console.error('Translation error:', response);
-            // Handle translation error here
           }
-          
         })
         .catch((error) => {
           console.error('Translation error-1:', error);
@@ -109,27 +118,34 @@ function BlogList({ load }) {
           <button onClick={handleBackClick} className="back-button">
             ← Back
           </button>
-          <>
+          <div className='mb-4'>
           <select id="languageSelect"
           onChange={(e) => {
             const selectedLanguage = e.target.value;
             if (selectedLanguage === selectedBlog.language) {
-              setTranslatedContent(''); // Clear the translated content
+              setTranslatedContent(''); 
             } else {
               handleTranslate(selectedBlog, selectedLanguage); // Translate to the selected language
             }
           }}>
           <option value={selectedBlog.language}>Default Language</option>
-         <option value="en">English</option>
+          <option value="en">English</option>
           <option value="fr">French</option>
+          <option value="de">German</option>
+          <option value="hi">Hindi</option>
+          <option value="id">Indonesian</option>
+          <option value="it">Japanese</option>
+          <option value="ko">Korean</option>
+          <option value="pt">Portuguese </option>
+          <option value="ru">Russian </option>
+          <option value="es">Spanish  </option>
+          <option value="ua">Ukrainian </option>
+          <option value="zh">Chinese  </option>
           </select>
-</>
+</div>
 
-          {/* <button onClick={() => handleTranslate(selectedBlog)} className="translate-button">
-            Translate
-          </button> */}
+          
           <h1>{selectedBlog.title}</h1>
-          {console.log('Translated Content:', translatedContent)}
           <p>{translatedContent || selectedBlog.content}</p>
           <p><b>Author:</b> {selectedBlog.author}</p>
         </div>
